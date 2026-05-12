@@ -6,7 +6,6 @@ module tb_hormuz_game_success;
     reg start;
     reg left;
     reg right;
-    reg tick;
 
     wire       running;
     wire       clear;
@@ -34,7 +33,6 @@ module tb_hormuz_game_success;
         .start(start),
         .left(left),
         .right(right),
-        .tick(tick),
         .running(running),
         .clear(clear),
         .game_over(game_over),
@@ -91,7 +89,6 @@ module tb_hormuz_game_success;
             start = 1'b0;
             left  = 1'b0;
             right = 1'b0;
-            tick  = 1'b0;
         end
     endtask
 
@@ -120,8 +117,10 @@ module tb_hormuz_game_success;
 
     task pulse_left;
         begin
-            left  = 1'b1;
+            left  = 1'b0;
             right = 1'b0;
+            @(negedge clk);
+            left  = 1'b1;
             @(posedge clk);
             #1;
             left = 1'b0;
@@ -131,6 +130,8 @@ module tb_hormuz_game_success;
     task pulse_right;
         begin
             left  = 1'b0;
+            right = 1'b0;
+            @(negedge clk);
             right = 1'b1;
             @(posedge clk);
             #1;
@@ -152,7 +153,7 @@ module tb_hormuz_game_success;
         end
     endtask
 
-    task tick_one_second_toward;
+    task advance_one_clock_toward;
         input integer target_lane;
         integer current_lane;
         begin
@@ -160,18 +161,18 @@ module tb_hormuz_game_success;
             left  = 1'b0;
             right = 1'b0;
 
+            @(negedge clk);
+
             if (current_lane > target_lane) begin
                 left = 1'b1;
             end else if (current_lane < target_lane) begin
                 right = 1'b1;
             end
 
-            tick = 1'b1;
             @(posedge clk);
             #1;
             left  = 1'b0;
             right = 1'b0;
-            tick  = 1'b0;
         end
     endtask
 
@@ -195,30 +196,22 @@ module tb_hormuz_game_success;
         end
     endtask
 
-    task pulse_tick;
-        begin
-            tick = 1'b1;
-            @(posedge clk);
-            #1 tick = 1'b0;
-        end
-    endtask
-
     task play_safe_pattern;
         input integer safe_lane;
         reg [1:0] before_pattern;
         begin
             before_pattern = pattern;
 
-            tick_one_second_toward(safe_lane);
-            check(game_over == 1'b0, "first countdown tick should not produce game_over");
+            advance_one_clock_toward(safe_lane);
+            check(game_over == 1'b0, "first countdown clock should not produce game_over");
 
-            tick_one_second_toward(safe_lane);
+            advance_one_clock_toward(safe_lane);
             check(count == 2'b01, "count should be 1 before evaluation");
 
             check(ship_lane(ship) == safe_lane, "ship should reach safe lane before evaluation");
             check((ship & obs) == 3'b000, "selected lane must be safe before evaluation");
 
-            tick_one_second_toward(safe_lane);
+            advance_one_clock_toward(safe_lane);
             check(game_over == 1'b0, "safe pattern should not produce game_over");
 
             $display("[SAFE] pattern=%0d lane=%0d",
@@ -233,9 +226,9 @@ module tb_hormuz_game_success;
         apply_reset();
         pulse_start();
 
+        play_safe_pattern(2);
         play_safe_pattern(1);
-        play_safe_pattern(1);
-        play_safe_pattern(0);
+        play_safe_pattern(2);
         play_safe_pattern(2);
 
         check(clear == 1'b1, "success scenario should assert clear");

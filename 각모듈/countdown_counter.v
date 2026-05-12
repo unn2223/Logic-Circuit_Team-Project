@@ -4,7 +4,7 @@ module countdown_counter(
     input  wire       clk,
     input  wire       reset,
     input  wire       start_event,
-    input  wire       tick_event,
+    input  wire       step_event,
     input  wire       safe_event,
     input  wire       count_is_1,
     output wire [1:0] count
@@ -21,7 +21,7 @@ module countdown_counter(
 
     not u_not_count0(n_count0, count[0]);
     not u_not_count_is_1(n_count_is_1, count_is_1);
-    and u_and_decrement_event(decrement_event, tick_event, n_count_is_1);
+    and u_and_decrement_event(decrement_event, step_event, n_count_is_1);
     or  u_or_reload_event(reload_event, start_event, safe_event);
 
     xor u_xor_dec1(dec1, count[1], n_count0);

@@ -6,7 +6,6 @@ module tb_hormuz_game_game_over;
     reg start;
     reg left;
     reg right;
-    reg tick;
 
     wire       running;
     wire       clear;
@@ -34,7 +33,6 @@ module tb_hormuz_game_game_over;
         .start(start),
         .left(left),
         .right(right),
-        .tick(tick),
         .running(running),
         .clear(clear),
         .game_over(game_over),
@@ -80,7 +78,6 @@ module tb_hormuz_game_game_over;
             start = 1'b0;
             left  = 1'b0;
             right = 1'b0;
-            tick  = 1'b0;
         end
     endtask
 
@@ -105,11 +102,10 @@ module tb_hormuz_game_game_over;
         end
     endtask
 
-    task tick_one_cycle;
+    task advance_one_clock;
         begin
-            tick = 1'b1;
             @(posedge clk);
-            #1 tick = 1'b0;
+            #1;
         end
     endtask
 
@@ -129,24 +125,21 @@ module tb_hormuz_game_game_over;
         check(count == 2'b11, "count should start at 3");
 
         left = 1'b1;
-        tick_one_cycle();
+        advance_one_clock();
         left = 1'b0;
         check(ship == 3'b001, "ship should move into blocked lane 0");
-        check(count == 2'b10, "first tick should decrement count to 2");
-        check(game_over == 1'b0, "first tick should not end game");
+        check(count == 2'b10, "first clock should decrement count to 2");
+        check(game_over == 1'b0, "first clock should not end game");
 
-        tick_one_cycle();
-        check(count == 2'b01, "second tick should decrement count to 1");
+        advance_one_clock();
+        check(count == 2'b01, "second clock should decrement count to 1");
         check(ship == 3'b001, "ship should stay in blocked lane before evaluation");
-        check(hit_raw == 1'b1, "ship and obstacle should overlap before evaluation tick");
-        check(game_over == 1'b0, "game should still be running before evaluation tick");
+        check(hit_raw == 1'b1, "ship and obstacle should overlap before game_over clock");
+        check(eval_event == 1'b1, "evaluation event should assert when count is 1");
+        check(hit_event == 1'b1, "hit_event should assert while evaluating collision");
+        check(game_over == 1'b0, "game should still be running before game_over clock");
 
-        tick = 1'b1;
-        #1;
-        check(eval_event == 1'b1, "evaluation event should assert on third tick");
-        check(hit_event == 1'b1, "hit_event should assert when evaluating collision");
-        @(posedge clk);
-        #1 tick = 1'b0;
+        advance_one_clock();
 
         check(game_over == 1'b1, "collision should assert game_over");
         check(running == 1'b0, "collision should stop running");

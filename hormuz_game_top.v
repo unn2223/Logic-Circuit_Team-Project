@@ -6,7 +6,6 @@ module hormuz_game_top(
     input  wire start,
     input  wire left,
     input  wire right,
-    input  wire tick,
 
     output wire       running,
     output wire       clear,
@@ -43,7 +42,7 @@ module hormuz_game_top(
     wire n_hit_raw;
     wire start_event;
     wire move_event;
-    wire tick_event;
+    wire step_event;
     wire count_is_1;
     wire clear_event;
 
@@ -62,11 +61,11 @@ module hormuz_game_top(
         .cmd(cmd)
     );
 
-    and u_and_tick_event(tick_event, running, tick);
+    buf u_buf_step_event(step_event, running);
     or  u_or_move_any(move_any, move_left, move_right);
     and u_and_move_event(move_event, running, move_any);
 
-    and u_and_eval_event(eval_event, tick_event, count_is_1);
+    and u_and_eval_event(eval_event, step_event, count_is_1);
 
     ship_move_logic u_ship_move_logic(
         .ship(ship),
@@ -117,7 +116,7 @@ module hormuz_game_top(
         .clk(clk),
         .reset(reset),
         .start_event(start_event),
-        .tick_event(tick_event),
+        .step_event(step_event),
         .safe_event(safe_event),
         .count_is_1(count_is_1),
         .count(count)
