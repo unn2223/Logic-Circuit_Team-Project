@@ -1,19 +1,43 @@
-# Module Testbenches
+***모듈별 테스트 벤치***
 
-`mux2_1`, `mux3_3`, `dff_async_reset` 자체 테스트벤치는 제외했습니다.
-단, 다른 모듈을 컴파일할 때 내부 의존성 때문에 해당 파일들이 함께 필요할 수 있습니다.
+**1. collision_detector**
 
-Icarus Verilog가 설치되어 있으면 프로젝트 루트에서 아래 명령으로 전체 실행할 수 있습니다.
+<img width="350" height="190" alt="image" src="https://github.com/user-attachments/assets/ce8987b3-03ef-4457-9534-e5f87f8304f0" />
 
-```powershell
-.\module_testbenches\run_all_iverilog.ps1
-```
+**2. countdown_counter**
 
-개별 실행 예시는 아래와 같습니다.
+<img width="716" height="208" alt="image" src="https://github.com/user-attachments/assets/fba1a9b8-4947-4045-9b04-4c14e29d358c" />
 
-```powershell
-iverilog -g2005 -o .\module_testbenches\out\tb_move_encoder.vvp .\module_testbenches\tb_move_encoder.v .\각모듈\move_encoder.v
-vvp .\module_testbenches\out\tb_move_encoder.vvp
-```
+**3. countdown_decoder**
 
-Vivado/ModelSim 등에서는 테스트벤치 파일과 필요한 DUT/하위 모듈 파일을 같이 compile한 뒤, `tb_*` 모듈을 simulation top으로 지정하면 됩니다.
+<img width="599" height="200" alt="image" src="https://github.com/user-attachments/assets/24f53754-5ca0-43a1-9cf7-18fb7047e3c0" />
+
+**4. decoder2to4**
+
+<img width="400" height="110" alt="image" src="https://github.com/user-attachments/assets/31126671-fdaa-4b57-b10f-4e2b636e6505" />
+
+**5. game_control**
+
+<img width="620" height="258" alt="image" src="https://github.com/user-attachments/assets/933957f6-7802-40e4-86bb-30c87fc66951" />
+
+**6. move_encoder**
+
+<img width="642" height="206" alt="image" src="https://github.com/user-attachments/assets/4e00ec6c-caa1-44f0-b80e-0701f24ee615" />
+
+**7. obstacle_counter**
+
+<img width="830" height="221" alt="image" src="https://github.com/user-attachments/assets/f33cbf68-0bbb-4793-835d-0bf6109f759c" />
+
+**8. obstacle_generator**
+
+<img width="637" height="139" alt="image" src="https://github.com/user-attachments/assets/1927b47e-92ae-4527-923b-5d4dbfd10f15" />
+
+**9. ship_move_logic**
+
+<img width="821" height="195" alt="image" src="https://github.com/user-attachments/assets/0615b802-77ae-45cb-9884-d4e3ccfc188d" />
+
+**10. ship_register**
+
+<img width="1410" height="191" alt="image" src="https://github.com/user-attachments/assets/8dd971b5-4e10-4259-9ed9-7735062586a8" />
+
+
